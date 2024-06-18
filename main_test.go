@@ -37,3 +37,85 @@ func TestCanvasNext(t *testing.T) {
 		{false, true, false},
 	}, next)
 }
+
+func TestResizeCanvas(t *testing.T) {
+	// square with odd size
+	c := [][]bool{
+		{false, false, false},
+		{false, true, false},
+		{false, false, false},
+	}
+
+	assert.Equal(t, [][]bool{
+		{false, false, false, false},
+		{false, true, false, false},
+		{false, false, false, false},
+		{false, false, false, false},
+	}, resizeCanvas(c, 4, 4))
+
+	assert.Equal(t, [][]bool{
+		{false, false, false, false, false},
+		{false, false, false, false, false},
+		{false, false, true, false, false},
+		{false, false, false, false, false},
+		{false, false, false, false, false},
+	}, resizeCanvas(c, 5, 5))
+
+	// square with even size
+	c = [][]bool{
+		{false, false, false, false},
+		{false, true, true, false},
+		{false, false, false, false},
+	}
+
+	assert.Equal(t, [][]bool{
+		{false, false, false, false, false, false},
+		{false, false, false, false, false, false},
+		{false, false, true, true, false, false},
+		{false, false, false, false, false, false},
+		{false, false, false, false, false, false},
+		{false, false, false, false, false, false},
+	}, resizeCanvas(c, 6, 6))
+
+	assert.Equal(t, [][]bool{
+		{false, false, false, false, false, false, false},
+		{false, false, false, false, false, false, false},
+		{false, false, false, false, false, false, false},
+		{false, false, true, true, false, false, false},
+		{false, false, false, false, false, false, false},
+		{false, false, false, false, false, false, false},
+		{false, false, false, false, false, false, false},
+	}, resizeCanvas(c, 7, 7))
+
+	// rectangle
+	c = [][]bool{
+		{false, false, false},
+		{false, true, false},
+		{false, true, false},
+		{false, false, false},
+	}
+
+	assert.Equal(t, [][]bool{
+		{false, false, false, false, false},
+		{false, false, true, false, false},
+		{false, false, true, false, false},
+		{false, false, false, false, false},
+		{false, false, false, false, false},
+	}, resizeCanvas(c, 5, 5))
+
+	assert.Equal(t, [][]bool{
+		{false, false, false, false, false, false},
+		{false, false, false, false, false, false},
+		{false, false, true, false, false, false},
+		{false, false, true, false, false, false},
+		{false, false, false, false, false, false},
+		{false, false, false, false, false, false},
+	}, resizeCanvas(c, 6, 6))
+
+	assert.Equal(t, [][]bool{
+		{false, false, false, false, false},
+		{false, false, true, false, false},
+		{false, false, true, false, false},
+		{false, false, false, false, false},
+	}, resizeCanvas(c, 4, 5))
+}

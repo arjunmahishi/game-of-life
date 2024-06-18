@@ -11,6 +11,7 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"golang.org/x/term"
 )
 
 type errMsg error
@@ -43,6 +44,14 @@ func init() {
 	flag.Int64Var(&printConfig.refreshFreq, "freq", 100, "Refresh frequency")
 }
 
+func getTerminalSize() (int, int, error) {
+	width, height, err := term.GetSize(int(os.Stdout.Fd()))
+	if err != nil {
+		return 0, 0, err
+	}
+	return height, width, nil
+}
+
 func initialModel() model {
 	var canvas [][]bool
 	for _, arg := range flag.Args() {
@@ -64,6 +73,13 @@ func initialModel() model {
 			os.Exit(1)
 		}
 
+		rows, cols, err := getTerminalSize()
+		if err != nil {
+			fmt.Println("Error getting terminal size: ", err)
+			os.Exit(1)
+		}
+
+		canvas = resizeCanvas(canvas, rows, cols) // -4 for the padding
 		break
 	}
 
@@ -133,7 +149,12 @@ func (m model) View() string {
 		return m.err.Error()
 	}
 
-	return fmt.Sprintf("\n\n%s\n\npress q to quit\n\n", printCanvas(m.canvas))
+	footMsg := "press q to quit"
+	if m.stable {
+		footMsg = "REACHED STABILITY!!"
+	}
+
+	return fmt.Sprintf("\n\n%s\n\n%s\n\n", printCanvas(m.canvas), footMsg)
 }
 
 func getNeighbors(canvas [][]bool, i, j int) int {
@@ -239,6 +260,27 @@ func parseCanvas(canvas []byte) ([][]bool, error) {
 	}
 
 	return parsedCanvas, nil
+}
+
+func resizeCanvas(original [][]bool, x, y int) [][]bool {
+	// Create a new 2D array with the new dimensions
+	resized := make([][]bool, x)
+	for i := range resized {
+		resized[i] = make([]bool, y)
+	}
+
+	// Calculate the starting indices for centering the original array
+	startRow := (x - len(original)) / 2
+	startCol := (y - len(original[0])) / 2
+
+	// Copy values from the original array to the centered position in the new array
+	for i, row := range original {
+		for j, cell := range row {
+			resized[startRow+i][startCol+j] = cell
+		}
+	}
+
+	return resized
 }
 
 func getEmptyCanvas(m, n int) [][]int {
