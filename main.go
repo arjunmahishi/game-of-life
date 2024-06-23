@@ -28,6 +28,7 @@ var printConfig = struct {
 	filledCell  string
 	lineSpace   string
 	refreshFreq int64
+	noColor     bool
 }{}
 
 var (
@@ -35,13 +36,12 @@ var (
 )
 
 func init() {
-	// flag.StringVar(&printConfig.filledCell, "filled", "▓", "Filled cell character")
-	// flag.StringVar(&printConfig.emptyCell, "empty", "░", "Empty cell character")
-	flag.StringVar(&printConfig.filledCell, "filled", "*", "Filled cell character")
+	flag.StringVar(&printConfig.filledCell, "filled", "■", "Filled cell character")
 	flag.StringVar(&printConfig.emptyCell, "empty", " ", "Empty cell character")
 	flag.StringVar(&printConfig.lineSpace, "line-space", "", "Line space character")
 	flag.StringVar(&emptyCanvas, "canvas-only", "", "Empty canvas")
 	flag.Int64Var(&printConfig.refreshFreq, "freq", 100, "Refresh frequency")
+	flag.BoolVar(&printConfig.noColor, "no-color", false, "Disable colors")
 }
 
 func getTerminalSize() (int, int, error) {
@@ -149,12 +149,18 @@ func (m model) View() string {
 		return m.err.Error()
 	}
 
+	color := yellow
 	footMsg := "press q to quit"
 	if m.stable {
 		footMsg = "REACHED STABILITY!!"
+		color = green
 	}
 
-	return fmt.Sprintf("\n\n%s\n\n%s\n\n", printCanvas(m.canvas), footMsg)
+	if printConfig.noColor {
+		color = nil
+	}
+
+	return fmt.Sprintf("\n\n%s\n\n%s\n\n", printCanvas(m.canvas, color), footMsg)
 }
 
 func getNeighbors(canvas [][]bool, i, j int) int {
@@ -292,11 +298,16 @@ func getEmptyCanvas(m, n int) [][]int {
 	return rows
 }
 
-func printCanvas(canvas [][]bool) string {
+func printCanvas(canvas [][]bool, color colorFunc) string {
 	var buf bytes.Buffer
 	for _, row := range canvas {
 		for _, cell := range row {
 			if cell {
+				if color != nil {
+					buf.WriteString(color(printConfig.filledCell) + printConfig.lineSpace)
+					continue
+				}
+
 				buf.WriteString(printConfig.filledCell + printConfig.lineSpace)
 				continue
 			}
