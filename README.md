@@ -1,4 +1,4 @@
-# Gamr of Life
+# Game of Life
 
 A simple(ish) program that simulates [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) on the terminal. 
 
@@ -33,15 +33,13 @@ $  cat canvas.txt
 00000000000000000
 00000000000000000
 ```
-Dont worry about the size of the matrix. During the simulationm the size will be adjusted to center the pattern in your terminal window.
+Dont worry about the size of the matrix. During the simulation the size will be adjusted to center the pattern in your terminal window.
 
 **Run it**
 
 ```bash
 $ ./bin/life canvas.txt
 ```
-
-
 
 **Output**
 
