@@ -44,3 +44,23 @@ $ ./bin/life canvas.txt
 **Output**
 
 ![](https://i.imgur.com/aGp5dHN.gif)
+
+### More options
+
+```bash
+$ ./bin/life --help
+
+Usage of ./bin/life:
+  -canvas-only string
+        Empty canvas
+  -empty string
+        Empty cell character (default " ")
+  -filled string
+        Filled cell character (default "■")
+  -freq int
+        Refresh frequency (default 100)
+  -line-space string
+        Line space character
+  -no-color
+        Disable colors
+```
